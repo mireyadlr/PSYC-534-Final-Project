@@ -183,16 +183,12 @@ happy2022$Country[happy2022$Country == 'Botswana*'] <- "Botswana"
 happy2022$Country[happy2022$Country == 'Belarus*'] <- "Belarus"
 happy2022$Country[happy2022$Country == 'Azerbaijan*'] <- "Azerbaijan"
 happy2022$Country[happy2022$Country == 'Eswatini, Kingdom of*'] <- "Swaziland"
-
-
-
+happy2022$Country[happy2022$Country == 'Czechia'] <- "Czech Republic"
 
 happy2017$Country[happy2017$Country == 'Hong Kong S.A.R., China'] <- "Hong Kong"
 happy2020$Country[happy2020$Country == 'Hong Kong S.A.R. of China'] <- "Hong Kong"
 happy2021$Country[happy2021$Country == 'Hong Kong S.A.R. of China'] <- "Hong Kong"
 happy2022$Country[happy2022$Country == 'Hong Kong S.A.R. of China'] <- "Hong Kong"
-
-
 
 happy2022$Country[happy2022$Country == 'Madagascar*'] <- "Madagascar"
 happy2022$Country[happy2022$Country == 'Luxembourg*'] <- "Luxembourg"
@@ -206,14 +202,28 @@ happy2020$Country[happy2020$Country == 'Taiwan Province of China'] <- "Taiwan"
 happy2021$Country[happy2021$Country == 'Taiwan Province of China'] <- "Taiwan"
 happy2022$Country[happy2022$Country == 'Taiwan Province of China'] <- "Taiwan"
 
+happy2019$Country[happy2019$Country == 'Northern Cyprus'] <- "North Cyprus"
+happy2018$Country[happy2018$Country == 'Northern Cyprus'] <- "North Cyprus"
+happy2022$Country[happy2022$Country == 'Congo'] <- "Congo (Brazzaville)"
 
+happy2019$Country[happy2019$Country == 'Trinidad & Tobago'] <- "Trinidad and Tobago"
+happy2018$Country[happy2018$Country == 'Trinidad & Tobago'] <- "Trinidad and Tobago"
+
+
+#####============== Merging datasets =================#####
 merged_15_16 <- merge(happy2015, happy2016, by = "Country", all = TRUE)
 merged_15_17 <- merge(merged_15_16, happy2017, by = "Country", all = TRUE)
 merged_15_18 <- merge(merged_15_17, happy2018, by = "Country", all = TRUE)
 merged_15_19 <- merge(merged_15_18, happy2019, by = "Country", all = TRUE)
 merged_15_20 <- merge(merged_15_19, happy2020, by = "Country", all = TRUE)
 merged_15_21 <- merge(merged_15_20, happy2021, by = "Country", all = TRUE)
-merged_15_22 <- merge(merged_15_21, happy2022, by = "Country", all = TRUE)
+happy_15to22 <- merge(merged_15_21, happy2022, by = "Country", all = TRUE)
+happy_15to22 <- happy_15to22[happy_15to22$Country != "xx", ] # deleted an invalid xx entry
+happy_15to22$Country[happy_15to22$Country == 'Swaziland'] <- 'Eswatini'
+happy_15to22$Region[c(50, 101, 132, 136)] <- "Sub-Saharan Africa"
+happy_15to22$Region[89] <- "Southern Asia"
+happy_15to22$Region[c(14, 120)] <- "Latin America and Caribbean" # manually assigning region to countries with NA for Region
+
 
 
 
