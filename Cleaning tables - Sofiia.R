@@ -138,6 +138,8 @@ happy2021 <- rename(happy2021,
                     'Dystopia_Residual_2021' = 'Dystopia...residual',
 )
 
+
+
 #####============== Cleaning table for 2022 =================#####
 happy2022$RANK <-NULL
 happy2022$Whisker.high <-NULL
@@ -209,6 +211,17 @@ happy2022$Country[happy2022$Country == 'Congo'] <- "Congo (Brazzaville)"
 happy2019$Country[happy2019$Country == 'Trinidad & Tobago'] <- "Trinidad and Tobago"
 happy2018$Country[happy2018$Country == 'Trinidad & Tobago'] <- "Trinidad and Tobago"
 
+happy2015$Dystopia_Residual_2015 <- NULL
+happy2016$Dystopia_Residual_2016 <- NULL
+happy2017$Dystopia_Residual_2017 <- NULL
+happy2018$Dystopia_Residual_2018 <- NULL
+happy2019$Dystopia_Residual_2019 <- NULL
+happy2020$Dystopia_Residual_2020 <- NULL
+happy2021$Dystopia_Residual_2021 <- NULL
+happy2022$Dystopia_Residual_2022 <- NULL
+
+
+
 
 #####============== Merging datasets =================#####
 merged_15_16 <- merge(happy2015, happy2016, by = "Country", all = TRUE)
@@ -224,8 +237,33 @@ happy_15to22$Region[c(50, 101, 132, 136)] <- "Sub-Saharan Africa"
 happy_15to22$Region[89] <- "Southern Asia"
 happy_15to22$Region[c(14, 120)] <- "Latin America and Caribbean" # manually assigning region to countries with NA for Region
 
+# ensuring scores are num and not chr
+happy_15to22$Generosity_2022 <- as.numeric(sub(",", ".", happy_15to22$Generosity_2022))
+happy_15to22$GDP_2022 <- as.numeric(sub(",", ".", happy_15to22$GDP_2022))
+happy_15to22$Social_Support_2022 <- as.numeric(sub(",", ".", happy_15to22$Social_Support_2022))
+happy_15to22$Corruption_2018 <- as.numeric(happy_15to22$Corruption_2018)
+happy_15to22$Corruption_2022 <- as.numeric(sub(",", ".", happy_15to22$Corruption_2022))
+happy_15to22$Life_Expectancy_2022 <- as.numeric(sub(",", ".", happy_15to22$Life_Expectancy_2022))
+happy_15to22$Freedom_2022 <- as.numeric(sub(",", ".", happy_15to22$Freedom_2022))
+
+#####-------------- Creating columns of average scores --------------#####
+happy_15to22$meanGDP <- rowMeans(happy_15to22[, c("GDP_2015","GDP_2016","GDP_2017","GDP_2018","GDP_2019","GDP_2020","GDP_2021","GDP_2022")], 
+                                           na.rm = TRUE)
+happy_15to22$meanSocialSupport <- rowMeans(happy_15to22[, c("Social_Support_2015","Social_Support_2016","Social_Support_2017","Social_Support_2018","Social_Support_2019","Social_Support_2020","Social_Support_2021","Social_Support_2022")], 
+                                           na.rm = TRUE)
+happy_15to22$meanGenerosity <- rowMeans(happy_15to22[, c("Generosity_2015","Generosity_2016","Generosity_2017","Generosity_2018","Generosity_2019","Generosity_2020","Generosity_2021","Generosity_2022")], 
+                                           na.rm = TRUE)
+happy_15to22$meanCorruption <- rowMeans(happy_15to22[, c("Corruption_2015","Corruption_2016","Corruption_2017","Corruption_2018","Corruption_2019","Corruption_2020","Corruption_2021","Corruption_2022")], 
+                                           na.rm = TRUE)
+happy_15to22$meanLifeExpectancy <- rowMeans(happy_15to22[, c("Life_Expectancy_2015","Life_Expectancy_2016","Life_Expectancy_2017","Life_Expectancy_2018","Life_Expectancy_2019","Life_Expectancy_2020","Life_Expectancy_2021","Life_Expectancy_2022")], 
+                                           na.rm = TRUE)
+happy_15to22$meanFreedom <- rowMeans(happy_15to22[, c("Freedom_2015","Freedom_2016","Freedom_2017","Freedom_2018","Freedom_2019","Freedom_2020","Freedom_2021","Freedom_2022")], 
+                                           na.rm = TRUE)
 
 
-
+happy_avg <- happy_15to22[, c("Country", "Region", "meanGDP", "meanSocialSupport", "meanGenerosity", "meanCorruption", "meanLifeExpectancy", "meanFreedom")]
+#####=============== END OF CLEANING SECTION ===========#####
+# USE final happy_avg Dataset for all analysis
+# write.csv(happy_avg, "happy_avg.csv", row.names = FALSE)
 
 
