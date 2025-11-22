@@ -316,62 +316,84 @@ happyData <-happy_avg
 ```
 
 ##Analyses
+First, we created two vectors. One that assinged regions to numbers and the other that was a vector of the variables we ran analyses on: "meanGDP", "meanFreedom", and "meanLifeExpectancy".
+```{r Vectors}
+#Vector that acts as a key assigning regions to a number
+regionKey <- c(
+  "Southern Asia","Central and Eastern Europe",
+  "Middle East and Northern Africa", "Sub-Saharan Africa",
+  "Latin America and Caribbean", "Australia and New Zealand",
+  "Western Europe", "Southeastern Asia",
+  "North America", "Eastern Asia"
+)
 
-First, we created two functions in order to run the analyses correctly using **function()**. The first function creates a vector for the regions and the specific variable we are testing.The second function gets the p-values from the t-tests we ran. 
-```{r Analyses}
-GetVectorForRegion <- function(m){
-  currentVector <- subset(happyData, happyData$Region == regionKey[m], select = meanGDP)
-  return(currentVector$meanGDP)
-}
-#for meanGDP variable 
+# Vector of variables to analyze in happyData
+vars <- c("meanGDP", "meanFreedom", "meanLifeExpectancy")
 
-GetPValue <- function(i, j){
-  t.test(GetVectorForRegion(i),
-         GetVectorForRegion(j),
-         paired = FALSE)$p.value
-}
-#gets p-values from the t-tests
 
 ```
 
-So we have the p-values from the t-tests but we cannot see it in an organized fashion so we needed to create a table of the p-values in order to see them and known which p-value is from which t-test. First, we created a vector of regions so that they are each assigned a number by row number. We, then, created an empty matrix that will hold the later p-values we will get using **matrix()** and gave the columns and rows their correct region label. Then, we finally put the p-values into the matrix by row and then by column using a *for loop*. 
+We, then, ran analyses. We created a function using **function()** that would run t-tests against the scores of the other regions for each variable and return its p-values. But, in order to see the p-values in an organized fashion, we created a matrix where the p-values would be held using a *for loop*. We assigned the matrix's row and column headers properly and then checked to make sure it was working by viewing it. 
 
 ```{r P-value Matrix}
 
-##Creating vector of regions so they are each assigned a number (by row number)
-regionKey <- c("Southern Asia","Central and Eastern Europe",
-               "Middle East and Northern Africa", "Sub-Saharan Africa",
-               "Latin America and Caribbean", "Australia and New Zealand",
-               "Western Europe", "Southeastern Asia",
-               "North America", "Eastern Asia")
-regionKey
-
-
-##Create empty matrix that will hold p-values
-pMatrix <- matrix(nrow = 10, ncol = 10)
-
-#Gave the matrix's columns and rows their correct headers
-colnames(pMatrix) <- c("Southern Asia","Central and Eastern Europe",
-                       "Middle East and Northern Africa", "Sub-Saharan Africa",
-                       "Latin America and Caribbean", "Australia and New Zealand",
-                       "Western Europe", "Southeastern Asia",
-                       "North America", "Eastern Asia")
-
-rownames(pMatrix) <- c("Southern Asia","Central and Eastern Europe",
-                       "Middle East and Northern Africa", "Sub-Saharan Africa",
-                       "Latin America and Caribbean", "Australia and New Zealand",
-                       "Western Europe", "Southeastern Asia",
-                       "North America", "Eastern Asia")
-
-#Adding p-values into matrix by rows, then columns
-for(i in 1:9){
-  for(j in (i+1):10){
-    #cat("i = ", i, "j = ", j,"\n")
-    pMatrix[i,j] <- GetPValue(i,j)
-  }
+# Function to compute t-test p-value
+GetPValue <- function(i, j, happyFactor) {
+  x <- happyData %>% filter(Region == regionKey[i]) %>% pull(happyFactor)
+  y <- happyData %>% filter(Region == regionKey[j]) %>% pull(happyFactor)
+  return(t.test(x, y)$p.value)
 }
 
-#Finally, we view matrix (specifically for GDP variable)
-#View(pMatrix)
+# Create p-value matrices for each variable
+pMatrices <- list()
+
+for (var in vars) { #loops factors
+  pMat <- matrix(NA, nrow = 10, ncol = 10)#creates empty matrix where p-values will be stored
+  for (i in 1:9) {   #loops rows
+    for (j in (i+1):10) {  #loops columns
+      pMat[i, j] <- GetPValue(i, j, var) #passes the two regions to conduct the t.test on for one specific happy factor
+    }
+  }
+  
+  #giving the columns and rows headers with the country names instead of their numbers using the region keys
+  rownames(pMat) <- regionKey
+  colnames(pMat) <- regionKey
+  
+  #storing the completed p-value matrix into the larger list of matrices for every variable
+  pMatrices[[var]] <- pMat
+}
+
+#View(pMatrices[["meanGDP"]]) #checking the matrix for one factor
+
 ```
+
+For the p-values we received, we knew that there was a 5% possibility of getting a false positive so we adjusted it using the FDR method.
+
+```{r Adjusted P-Values}
+adjusted_pMatrices <- lapply(pMatrices, function(mat) {
+  
+  # get upper-triangle p-values
+  pvals <- mat[upper.tri(mat)]
+  
+  # FDR correction
+  adj <- p.adjust(pvals, method = "fdr")
+  
+  # fill into matrix
+  mat_adj <- mat
+  mat_adj[upper.tri(mat_adj)] <- adj
+  
+  return(mat_adj)
+})
+
+# check results
+names(adjusted_pMatrices)
+
+# view one variable
+#View(adjusted_pMatrices[["meanGDP"]])
+#View(adjusted_pMatrices[["meanLifeExpectancy"]])
+#View(adjusted_pMatrices[["meanFreedom"]])
+
+```
+
+##Plots
 
