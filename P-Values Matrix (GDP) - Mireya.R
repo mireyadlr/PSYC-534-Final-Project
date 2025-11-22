@@ -29,12 +29,12 @@ View(pMatrix)
 
 colnames(pMatrix) <- c("Southern Asia","Central and Eastern Europe",
                        "Middle East and Northern Africa", "Sub-Saharan Africa",
-                       "Latin Acmerica and Caribbean", "Australia and New Zealand",
+                       "Latin America and Caribbean", "Australia and New Zealand",
                        "Western Europe", "Southeastern Asia",
                        "North America", "Eastern Asia")
 
 rownames(pMatrix) <- c("Southern Asia","Central and Eastern Europe",
                        "Middle East and Northern Africa", "Sub-Saharan Africa",
-                       "Latin Acmerica and Caribbean", "Australia and New Zealand",
+                       "Latin America and Caribbean", "Australia and New Zealand",
                        "Western Europe", "Southeastern Asia",
                        "North America", "Eastern Asia")
