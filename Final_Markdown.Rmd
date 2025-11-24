@@ -170,14 +170,14 @@ happy2022 <- rename(happy2022,
 
 ```
 
-##Checking the Data
+## Checking the Data
 
 Here, we checked the data to make sure the country names were the same in spelling and label.
 
 ```{r Checking Spelling}
 #setdiff(unique(happy2015$Country), unique(happy2016$Country))
 
-#unique(happy2017$Country[grepl("(?=.*o)(?=.*m)(?=.*a)(?=.*l)(?=.*i)", happy2017$Country, ignore.case = TRUE, perl = TRUE)])
+#unique(happy2017$Country[grepl("(?=.*o)(?=.*m)(?=.*a)(?=.*l)(?=.*i)",happy2017$Country, ignore.case = TRUE, perl = TRUE)])
 ```
 
 We, then, fixed the ones with the different spellings in order to make all of the data uniform. 
@@ -248,7 +248,7 @@ happy2021$Dystopia_Residual_2021 <- NULL
 happy2022$Dystopia_Residual_2022 <- NULL
 ```
 
-##Merging the Data
+## Merging the Data
 In order to look at only one data set, we merged all of the datasets by country using **merge()**. 
 
 ```{r Merging the Data}
@@ -270,10 +270,11 @@ happy_15to22 <- happy_15to22[happy_15to22$Country != "xx", ] # deleted an invali
 happy_15to22$Country[happy_15to22$Country == 'Swaziland'] <- 'Eswatini'
 happy_15to22$Region[c(50, 101, 132, 136)] <- "Sub-Saharan Africa"
 happy_15to22$Region[89] <- "Southern Asia"
-happy_15to22$Region[c(14, 120)] <- "Latin America and Caribbean" # manually assigning region to countries with NA for Region
+happy_15to22$Region[c(14, 120)] <- "Latin America and Caribbean" 
+# manually assigning region to countries with NA for Region
 ```
 
-##Checking the Data #2
+## Checking the Data Part 2
 Because errors can abound in this, we checked our data again to make sure we were getting what we want. For this one, we sought to ensure that the scores in the dataset were all numerical and not character type using **as.numeric()**.
 
 ```{r Checking the Data #2}
@@ -287,35 +288,46 @@ happy_15to22$Life_Expectancy_2022 <- as.numeric(sub(",", ".", happy_15to22$Life_
 happy_15to22$Freedom_2022 <- as.numeric(sub(",", ".", happy_15to22$Freedom_2022))
 ```
 
-##Finalizing the Data Cleaning
+## Finalizing the Data Cleaning
 
 Right now, we just have one huge dataset of the 8 datasets combined but we only really want the average scores of these years. So we created new columns of the means over the years for our desired variables: "GDP", "Social Support", "Generosity", "Corruption", "Life Expectancy", and "Freedom" using **rowMeans()**. 
 
 ```{r Creating the Averages Columns}
-happy_15to22$meanGDP <- rowMeans(happy_15to22[, c("GDP_2015","GDP_2016","GDP_2017","GDP_2018","GDP_2019","GDP_2020","GDP_2021","GDP_2022")], 
+happy_15to22$meanGDP <- rowMeans(happy_15to22[, c("GDP_2015","GDP_2016","GDP_2017","GDP_2018",
+                                                  "GDP_2019","GDP_2020","GDP_2021","GDP_2022")], 
+                                 na.rm = TRUE)
+happy_15to22$meanSocialSupport <- rowMeans(happy_15to22[,
+                                    c("Social_Support_2015","Social_Support_2016","Social_Support_2017",
+                                      "Social_Support_2018","Social_Support_2019","Social_Support_2020",
+                                      "Social_Support_2021","Social_Support_2022")], 
                                            na.rm = TRUE)
-happy_15to22$meanSocialSupport <- rowMeans(happy_15to22[, c("Social_Support_2015","Social_Support_2016","Social_Support_2017","Social_Support_2018","Social_Support_2019","Social_Support_2020","Social_Support_2021","Social_Support_2022")], 
-                                           na.rm = TRUE)
-happy_15to22$meanGenerosity <- rowMeans(happy_15to22[, c("Generosity_2015","Generosity_2016","Generosity_2017","Generosity_2018","Generosity_2019","Generosity_2020","Generosity_2021","Generosity_2022")], 
-                                           na.rm = TRUE)
-happy_15to22$meanCorruption <- rowMeans(happy_15to22[, c("Corruption_2015","Corruption_2016","Corruption_2017","Corruption_2018","Corruption_2019","Corruption_2020","Corruption_2021","Corruption_2022")], 
-                                           na.rm = TRUE)
-happy_15to22$meanLifeExpectancy <- rowMeans(happy_15to22[, c("Life_Expectancy_2015","Life_Expectancy_2016","Life_Expectancy_2017","Life_Expectancy_2018","Life_Expectancy_2019","Life_Expectancy_2020","Life_Expectancy_2021","Life_Expectancy_2022")], 
-                                           na.rm = TRUE)
-happy_15to22$meanFreedom <- rowMeans(happy_15to22[, c("Freedom_2015","Freedom_2016","Freedom_2017","Freedom_2018","Freedom_2019","Freedom_2020","Freedom_2021","Freedom_2022")], 
-                                           na.rm = TRUE)
+happy_15to22$meanGenerosity <-rowMeans(happy_15to22[,c("Generosity_2015","Generosity_2016",
+                            "Generosity_2017","Generosity_2018","Generosity_2019",
+                            "Generosity_2020","Generosity_2021", "Generosity_2022")],na.rm = TRUE)
+happy_15to22$meanCorruption <-rowMeans(happy_15to22[,
+                            c("Corruption_2015","Corruption_2016","Corruption_2017",
+                            "Corruption_2018","Corruption_2019","Corruption_2020",
+                            "Corruption_2021","Corruption_2022")],na.rm = TRUE)
+happy_15to22$meanLifeExpectancy <- rowMeans(happy_15to22[,c("Life_Expectancy_2015","Life_Expectancy_2016",
+                           "Life_Expectancy_2017","Life_Expectancy_2018","Life_Expectancy_2019",
+                           "Life_Expectancy_2020", "Life_Expectancy_2021","Life_Expectancy_2022")],na.rm = TRUE)
+happy_15to22$meanFreedom <- rowMeans(happy_15to22[, c("Freedom_2015","Freedom_2016",
+                                                      "Freedom_2017","Freedom_2018",
+                                                    "Freedom_2019","Freedom_2020","Freedom_2021",
+                                                    "Freedom_2022")], na.rm = TRUE)
 ```
 
 Finally, we created the actual dataset that we will be using to run analyses, which hold only the averaged scores of the desired variables that we created earlier.
 
 ```{r Final}
-happy_avg <- happy_15to22[, c("Country", "Region", "meanGDP", "meanSocialSupport", "meanGenerosity", "meanCorruption", "meanLifeExpectancy", "meanFreedom")]
+happy_avg <- happy_15to22[, c("Country", "Region", "meanGDP", "meanSocialSupport", "meanGenerosity","meanCorruption", "meanLifeExpectancy", "meanFreedom")]
 
 #renamed dataset
 happyData <-happy_avg
 ```
 
-##Analyses
+## Analyses
+
 First, we created two vectors. One that assinged regions to numbers and the other that was a vector of the variables we ran analyses on: "meanGDP", "meanFreedom", and "meanLifeExpectancy".
 ```{r Vectors}
 #Vector that acts as a key assigning regions to a number
@@ -351,11 +363,12 @@ for (var in vars) { #loops factors
   pMat <- matrix(NA, nrow = 10, ncol = 10)#creates empty matrix where p-values will be stored
   for (i in 1:9) {   #loops rows
     for (j in (i+1):10) {  #loops columns
-      pMat[i, j] <- GetPValue(i, j, var) #passes the two regions to conduct the t.test on for one specific happy factor
+      pMat[i, j] <- GetPValue(i, j, var) 
+      #passes the two regions to conduct the t.test on for one specific happy factor
     }
   }
   
-  #giving the columns and rows headers with the country names instead of their numbers using the region keys
+  #giving column/row headers w/ country names instead of their numbers using region keys
   rownames(pMat) <- regionKey
   colnames(pMat) <- regionKey
   
@@ -388,12 +401,214 @@ adjusted_pMatrices <- lapply(pMatrices, function(mat) {
 # check results
 names(adjusted_pMatrices)
 
-# view one variable
 #View(adjusted_pMatrices[["meanGDP"]])
 #View(adjusted_pMatrices[["meanLifeExpectancy"]])
 #View(adjusted_pMatrices[["meanFreedom"]])
 
 ```
 
-##Plots
+## Plots
+With our dataframe and our matrices of the adjusted p-values, now we can do some plotting. Our first plots were heatmaps of the adjusted P-values for each variable: "meanGDP", "meanLifeExpectancy", and "meanFreedom".
+
+```{r Heatmaps}
+
+#made heatmap and added color palette for meanGDP
+heatmap(adjusted_pMatrices[["meanGDP"]], 
+  Rowv = NA, Colv= NA,
+  cexRow=0.5,#made region names smaller 
+  cexCol=0.5, #made region names smaller
+  col = colorRampPalette(c("darkgreen", "lightgreen", "white", 
+                           "skyblue", "navy"))(200))
+#Added a title
+title("Heatmap of meanGDP adjusted P-values")
+
+#Added a legend on the side
+zlim_meanGDP <- range(adjusted_pMatrices[["meanGDP"]], na.rm = TRUE)
+cols <- colorRampPalette(c("darkgreen", "lightgreen", "white", 
+                           "skyblue", "navy"))(200)
+legend(
+  "topleft", 
+  legend = round(seq(zlim_meanGDP[1], zlim_meanGDP[2], length.out = 10), 2),
+  fill = cols[seq(1, length(cols), length.out = 10)],                            
+  border = NA,
+  bty = "n",
+  title = "Value"
+)
+
+
+#heatmap for meanLifeExpectancy
+heatmap(adjusted_pMatrices[["meanLifeExpectancy"]], 
+        Rowv = NA, Colv= NA,
+        cexRow = 0.5, #made region name smaller
+        cexCol = 0.5, #made region name smaller
+        col = colorRampPalette(c("darkgreen", "lightgreen", "white", 
+                                 "skyblue", "navy"))(200))
+#Added a title
+title("Heatmap of meanLifeExpectancy adjusted P-values")
+
+#Added a legend on the side
+zlim_meanLifeExpectancy <- range(adjusted_pMatrices[["meanLifeExpectancy"]], na.rm = TRUE)
+
+legend(
+  "topleft", 
+  legend = round(seq(zlim_meanLifeExpectancy[1], zlim_meanLifeExpectancy[2], length.out = 10), 2),
+  fill = cols[seq(1, length(cols), length.out = 10)],                            
+  border = NA,
+  bty = "n",
+  title = "Value"
+)
+
+
+
+#heatmap for meanFreedom
+heatmap(adjusted_pMatrices[["meanFreedom"]], 
+        Rowv = NA, Colv= NA,
+        cexRow = 0.5, #made region names smaller
+        cexCol = 0.5, #made region names smaller
+        col = colorRampPalette(c("darkgreen", "lightgreen", "white", 
+                                 "skyblue", "navy"))(200))
+#Added a title
+title("Heatmap of meanFreedom adjusted P-values")
+
+#Added a legend on the side
+zlim_meanFreedom <- range(adjusted_pMatrices[["meanFreedom"]], na.rm = TRUE)
+
+legend(
+  "topleft", 
+  legend = round(seq(zlim_meanFreedom[1], zlim_meanFreedom[2], length.out = 10), 2),
+  fill = cols[seq(1, length(cols), length.out = 10)],                            
+  border = NA,
+  bty = "n",
+  title = "Value"
+)
+```
+
+Then, we plotted the adjusted p-values and added a 0.05 cut off line to see how many values were signficant for each variable: "meanGDP", "meanLifeExpectancy", "meanFreedom".
+
+```{r Plots}
+#for mean GDP
+adj_p_meanGDP <- adjusted_pMatrices[["meanGDP"]]
+
+# Flattened to a vector
+adj_p_vec_meanGDP <- as.vector(adj_p_meanGDP)
+
+# Removed NAs 
+adj_p_vec_meanGDP <- adj_p_vec_meanGDP[!is.na(adj_p_vec_meanGDP)]
+
+#sorted the values
+sorted_adj_p_meanGDP <- sort(adj_p_vec_meanGDP)
+
+#plotted the sorted values
+plot(
+  1:length(sorted_adj_p_meanGDP),
+  sorted_adj_p_meanGDP,
+  type = "p",
+  pch = 16,
+  col = "purple",
+  xlab = "Index",
+  ylab = "Adjusted P-value",
+  main = "Sorted Adjusted P-values for mean GDP"
+)
+
+# Added horizontal significance threshold at 0.05
+abline(h = 0.05, col = "blue", lty = 2)
+
+
+
+
+#for meanLifeExpectancy
+adj_p_meanLifeExpectancy <- adjusted_pMatrices[["meanLifeExpectancy"]]
+
+# Flattened to a vector
+adj_p_vec_meanLifeExpectancy <- as.vector(adj_p_meanLifeExpectancy)
+
+# Removed NAs
+adj_p_vec_meanLifeExpectancy <- adj_p_vec_meanLifeExpectancy[!is.na(adj_p_vec_meanLifeExpectancy)]
+
+#sorted the values
+sorted_adj_p_meanLifeExpectancy <- sort(adj_p_vec_meanLifeExpectancy)
+
+#plotted the sorted values
+plot(
+  1:length(sorted_adj_p_meanLifeExpectancy),
+  sorted_adj_p_meanLifeExpectancy,
+  type = "p",
+  pch = 16,
+  col = "purple",
+  xlab = "Index",
+  ylab = "Adjusted P-value",
+  main = "Sorted Adjusted P-values for mean Life Expectancy"
+)
+
+# Added horizontal significance threshold at 0.05
+abline(h = 0.05, col = "blue", lty = 2)
+
+
+##for mean FREEDOM
+adj_p_meanFreedom <- adjusted_pMatrices[["meanFreedom"]]
+
+# Flattened to a vector
+adj_p_vec_meanFreedom <- as.vector(adj_p_meanFreedom)
+
+# RemovedNAs 
+adj_p_vec_meanFreedom <- adj_p_vec_meanFreedom[!is.na(adj_p_vec_meanFreedom)]
+
+#sorted the values
+sorted_adj_p_meanFreedom <- sort(adj_p_vec_meanFreedom)
+
+#plotted the sorted values
+plot(
+  1:length(sorted_adj_p_meanFreedom),
+  sorted_adj_p_meanFreedom,
+  type = "p",
+  pch = 16,
+  col = "purple",
+  xlab = "Index",
+  ylab = "Adjusted P-value",
+  main = "Sorted Adjusted P-values for mean Freedom"
+)
+
+# Added horizontal significance threshold at 0.05
+abline(h = 0.05, col = "blue", lty = 2)
+
+```
+
+Lastly, we made barcharts of the means of each variable for every region. 
+
+```{r Barcharts}
+
+#for meanGDP
+mean_meanGDP <-tapply(happyData$meanGDP, happyData$Region, mean)
+barplot(
+  mean_meanGDP,
+  col = "steelblue",
+  ylab = "Mean GDP Score",
+  main = "Mean GDP Score by Region",
+  las = 2,  # rotated region names 90 degrees
+  cex.names = 0.3 #made region names smaller
+)
+
+
+#for meanLifeExpectancy
+mean_meanLifeExpectancy <-tapply(happyData$meanLifeExpectancy, happyData$Region, mean)
+barplot(
+  mean_meanLifeExpectancy,
+  col = "steelblue",
+  ylab = "Mean Life Expectancy Score",
+  main = "Mean Life Expectancy Score by Region",
+  las = 2, #rotated region names 90 degrees
+  cex.names = 0.3 #made region names smaller
+)
+
+#for meanFreedom
+mean_meanFreedom <-tapply(happyData$meanFreedom, happyData$Region, mean)
+barplot(
+  mean_meanFreedom,
+  col = "steelblue",
+  ylab = "Mean Freedom Score",
+  main = "Mean Freedom Score by Region",
+  las = 2,  # rotated region names 90 degrees
+  cex.names = 0.3 #made region names smaller
+)
+```
 
