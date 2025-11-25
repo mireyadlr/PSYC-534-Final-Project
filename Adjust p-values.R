@@ -17,9 +17,9 @@ regionKey <- c(
 happyFactors <- c("meanGDP", "meanFreedom", "meanLifeExpectancy")
 
 # Function to compute t-test p-value
-GetPValue <- function(row, column, factor) {
-  x <- happyData %>% filter(Region == regionKey[row]) %>% pull(factor)
-  y <- happyData %>% filter(Region == regionKey[column]) %>% pull(factor)
+GetPValue <- function(i, j, factor) {
+  x <- happyData %>% filter(Region == regionKey[i]) %>% pull(factor)
+  y <- happyData %>% filter(Region == regionKey[j]) %>% pull(factor)
   return(t.test(x, y)$p.value)
 }
 
@@ -29,8 +29,8 @@ pMatrices <- list()
 for (factor in happyFactors) { #loops factors
   pMat <- matrix(NA, nrow = 10, ncol = 10) #creates empty matrix where p-values will be stored
   for (row in 1:9) {   #loops rows
-    for (column in (i+1):10) {  #loops columns
-      pMat[i, j] <- GetPValue(row, column, factor) #passes the two regions to conduct the t.test on for one specific happy factor
+    for (column in (row+1):10) {  #loops columns
+      pMat[row, column] <- GetPValue(row, column, factor) #passes the two regions to conduct the t.test on for one specific happy factor
     }
   }
   
@@ -39,7 +39,7 @@ for (factor in happyFactors) { #loops factors
   colnames(pMat) <- regionKey
   
   #storing the completed p-value matrix into the larger list of matrices for every variable
-  pMatrices[[var]] <- pMat
+  pMatrices[[factor]] <- pMat
 }
 
 View(pMatrices[["meanGDP"]]) #checking the matrix for one factor
