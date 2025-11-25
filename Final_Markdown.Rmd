@@ -328,6 +328,45 @@ happyData <-happy_avg
 
 ## Analyses
 
+First, we made bar charts of the means of each variable for every region. This was just to see if any of them looked like they differed greatly and to get an idea how the regions might differ for each variable. For example, it seems like Sub-Saharan Africa might have a drastically different mean score for GDP as compared to North American. It seems like Southern Asia might have a drastically different mean score for Life Expectancy as compared to Western Europe. And it seems that Central and Eastern Europe might have a drastically different mean score for Freedom as compared to Australia and New Zealand.
+
+```{r Barcharts}
+
+#for meanGDP
+mean_meanGDP <-tapply(happyData$meanGDP, happyData$Region, mean)
+barplot(
+  mean_meanGDP,
+  col = "steelblue",
+  ylab = "Mean GDP Score",
+  main = "Mean GDP Score by Region",
+  las = 2,  # rotated region names 90 degrees
+  cex.names = 0.3 #made region names smaller
+)
+
+
+#for meanLifeExpectancy
+mean_meanLifeExpectancy <-tapply(happyData$meanLifeExpectancy, happyData$Region, mean)
+barplot(
+  mean_meanLifeExpectancy,
+  col = "steelblue",
+  ylab = "Mean Life Expectancy Score",
+  main = "Mean Life Expectancy Score by Region",
+  las = 2, #rotated region names 90 degrees
+  cex.names = 0.3 #made region names smaller
+)
+
+#for meanFreedom
+mean_meanFreedom <-tapply(happyData$meanFreedom, happyData$Region, mean)
+barplot(
+  mean_meanFreedom,
+  col = "steelblue",
+  ylab = "Mean Freedom Score",
+  main = "Mean Freedom Score by Region",
+  las = 2,  # rotated region names 90 degrees
+  cex.names = 0.3 #made region names smaller
+)
+```
+
 First, we created two vectors. One that assinged regions to numbers and the other that was a vector of the variables we ran analyses on: "meanGDP", "meanFreedom", and "meanLifeExpectancy".
 ```{r Vectors}
 #Vector that acts as a key assigning regions to a number
@@ -345,7 +384,7 @@ vars <- c("meanGDP", "meanFreedom", "meanLifeExpectancy")
 
 ```
 
-We, then, ran analyses. We created a function using **function()** that would run t-tests against the scores of the other regions for each variable and return its p-values. But, in order to see the p-values in an organized fashion, we created a matrix where the p-values would be held using a *for loop*. We assigned the matrix's row and column headers properly and then checked to make sure it was working by viewing it. 
+We, then, ran analyses to see if these mean scores actually did differ or if it was just by chance. This means we needed to run some t-tests. In order to do this, however, first we created a function using **function()** that would run the t-tests to see if the difference in the scores of the regions was statistically significant and it would return its p-values. But, in order to see the p-values in an organized fashion, we had to create a matrix where the p-values would be put in using a *for loop*. We assigned the matrix's row and column headers properly and then checked to make sure it was working by viewing it. 
 
 ```{r P-value Matrix}
 
@@ -408,82 +447,7 @@ names(adjusted_pMatrices)
 ```
 
 ## Plots
-With our dataframe and our matrices of the adjusted p-values, now we can do some plotting. Our first plots were heatmaps of the adjusted P-values for each variable: "meanGDP", "meanLifeExpectancy", and "meanFreedom".
-
-```{r Heatmaps}
-
-#made heatmap and added color palette for meanGDP
-heatmap(adjusted_pMatrices[["meanGDP"]], 
-  Rowv = NA, Colv= NA,
-  cexRow=0.5,#made region names smaller 
-  cexCol=0.5, #made region names smaller
-  col = colorRampPalette(c("darkgreen", "lightgreen", "white", 
-                           "skyblue", "navy"))(200))
-#Added a title
-title("Heatmap of meanGDP adjusted P-values")
-
-#Added a legend on the side
-zlim_meanGDP <- range(adjusted_pMatrices[["meanGDP"]], na.rm = TRUE)
-cols <- colorRampPalette(c("darkgreen", "lightgreen", "white", 
-                           "skyblue", "navy"))(200)
-legend(
-  "topleft", 
-  legend = round(seq(zlim_meanGDP[1], zlim_meanGDP[2], length.out = 10), 2),
-  fill = cols[seq(1, length(cols), length.out = 10)],                            
-  border = NA,
-  bty = "n",
-  title = "Value"
-)
-
-
-#heatmap for meanLifeExpectancy
-heatmap(adjusted_pMatrices[["meanLifeExpectancy"]], 
-        Rowv = NA, Colv= NA,
-        cexRow = 0.5, #made region name smaller
-        cexCol = 0.5, #made region name smaller
-        col = colorRampPalette(c("darkgreen", "lightgreen", "white", 
-                                 "skyblue", "navy"))(200))
-#Added a title
-title("Heatmap of meanLifeExpectancy adjusted P-values")
-
-#Added a legend on the side
-zlim_meanLifeExpectancy <- range(adjusted_pMatrices[["meanLifeExpectancy"]], na.rm = TRUE)
-
-legend(
-  "topleft", 
-  legend = round(seq(zlim_meanLifeExpectancy[1], zlim_meanLifeExpectancy[2], length.out = 10), 2),
-  fill = cols[seq(1, length(cols), length.out = 10)],                            
-  border = NA,
-  bty = "n",
-  title = "Value"
-)
-
-
-
-#heatmap for meanFreedom
-heatmap(adjusted_pMatrices[["meanFreedom"]], 
-        Rowv = NA, Colv= NA,
-        cexRow = 0.5, #made region names smaller
-        cexCol = 0.5, #made region names smaller
-        col = colorRampPalette(c("darkgreen", "lightgreen", "white", 
-                                 "skyblue", "navy"))(200))
-#Added a title
-title("Heatmap of meanFreedom adjusted P-values")
-
-#Added a legend on the side
-zlim_meanFreedom <- range(adjusted_pMatrices[["meanFreedom"]], na.rm = TRUE)
-
-legend(
-  "topleft", 
-  legend = round(seq(zlim_meanFreedom[1], zlim_meanFreedom[2], length.out = 10), 2),
-  fill = cols[seq(1, length(cols), length.out = 10)],                            
-  border = NA,
-  bty = "n",
-  title = "Value"
-)
-```
-
-Then, we plotted the adjusted p-values and added a 0.05 cut off line to see how many values were signficant for each variable: "meanGDP", "meanLifeExpectancy", "meanFreedom".
+Now, we plotted the adjusted p-values and added a 0.05 cut off line to see if there were any statistically significant adjusted p-values and if so, how many values were statistically significant.It seems that 29 values are statistically significant for mean GDP score. It seems that 19 values are statistically significant for mean Life Expectancy score. And it seems that 18 values are statistically significant for mean Freedom scores. 
 
 ```{r Plots}
 #for mean GDP
@@ -573,42 +537,42 @@ abline(h = 0.05, col = "blue", lty = 2)
 
 ```
 
-Lastly, we made barcharts of the means of each variable for every region. 
+But which regions are the statistically significant values for? For this, we created a plot of the adjusted P-values according to each region using **ggplot()**. And we did this for "meanGDP", "meanLifeExpectancy", and "meanFreedom".
 
-```{r Barcharts}
+```{r Final Plots}
 
-#for meanGDP
-mean_meanGDP <-tapply(happyData$meanGDP, happyData$Region, mean)
-barplot(
-  mean_meanGDP,
-  col = "steelblue",
-  ylab = "Mean GDP Score",
-  main = "Mean GDP Score by Region",
-  las = 2,  # rotated region names 90 degrees
-  cex.names = 0.3 #made region names smaller
-)
+library(ggplot2)
+library(reshape2)
+
+#had to melt data for meanGDP
+melted_meanGDP <-melt(adjusted_pMatrices[["meanGDP"]])
+
+#plotted adjusted p-values for meanGDP
+ggplot(melted_meanGDP, aes(Var2, Var1, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = round(value, 2)), color = "white") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
 
 
 #for meanLifeExpectancy
-mean_meanLifeExpectancy <-tapply(happyData$meanLifeExpectancy, happyData$Region, mean)
-barplot(
-  mean_meanLifeExpectancy,
-  col = "steelblue",
-  ylab = "Mean Life Expectancy Score",
-  main = "Mean Life Expectancy Score by Region",
-  las = 2, #rotated region names 90 degrees
-  cex.names = 0.3 #made region names smaller
-)
+melted_meanLifeExpectancy <- melt(adjusted_pMatrices[["meanLifeExpectancy"]])
+
+ggplot(melted_meanLifeExpectancy, aes(Var2, Var1, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = round(value, 2)), color = "white") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
 #for meanFreedom
-mean_meanFreedom <-tapply(happyData$meanFreedom, happyData$Region, mean)
-barplot(
-  mean_meanFreedom,
-  col = "steelblue",
-  ylab = "Mean Freedom Score",
-  main = "Mean Freedom Score by Region",
-  las = 2,  # rotated region names 90 degrees
-  cex.names = 0.3 #made region names smaller
-)
+melted_meanLifeExpectancy <- melt(adjusted_pMatrices[["meanLifeExpectancy"]])
+
+ggplot(melted_meanLifeExpectancy, aes(Var2, Var1, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = round(value, 2)), color = "white") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
 
+From this, we can clearly see that the data is consistent with the previous plotting of p-values. 
