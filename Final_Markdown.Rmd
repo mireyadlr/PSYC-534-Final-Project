@@ -552,7 +552,9 @@ ggplot(melted_meanGDP, aes(Var2, Var1, fill = value)) +
   geom_tile() +
   geom_text(aes(label = round(value, 2)), color = "white") +
   scale_fill_gradient(low = "blue", high = "red") +
-  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  xlab("") + ylab("") + 
+  ggtitle ("Adjusted P-Values for mean GDP")
 
 
 
@@ -563,7 +565,9 @@ ggplot(melted_meanLifeExpectancy, aes(Var2, Var1, fill = value)) +
   geom_tile() +
   geom_text(aes(label = round(value, 2)), color = "white") +
   scale_fill_gradient(low = "blue", high = "red") +
-  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  xlab("") + ylab("") +
+  ggtitle ("Adjusted P-Values for mean Life Expectancy")
 
 #for meanFreedom
 melted_meanLifeExpectancy <- melt(adjusted_pMatrices[["meanLifeExpectancy"]])
@@ -572,7 +576,9 @@ ggplot(melted_meanLifeExpectancy, aes(Var2, Var1, fill = value)) +
   geom_tile() +
   geom_text(aes(label = round(value, 2)), color = "white") +
   scale_fill_gradient(low = "blue", high = "red") +
-  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  xlab("") + ylab("") + 
+  ggtitle ("Adjusted P-Values for mean Freedom")
 ```
 
 From this, we can clearly see that the data is consistent with the previous plotting of p-values. 
